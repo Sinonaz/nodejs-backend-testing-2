@@ -8,25 +8,103 @@ describe('PostsService', () => {
   });
 
   describe('.findMany', () => {
-    const posts = [
-      {text: 'Post 1'},
-      {text: 'Post 2'},
-      {text: 'Post 3'},
-      {text: 'Post 4'},
-    ];
+    const postTexts = ['Post 1', 'Post 2', 'Post 3', 'Post 4'];
+    const posts = postTexts.map((text, index) => ({
+      id: String(index + 1),
+      text,
+    }));
 
     beforeEach(() => {
-      posts.forEach((post) => postsService.create(post));
+      postTexts.forEach((text) => postsService.create({ text }));
     });
 
     it('should return all posts if called without options', () => {
-      // реализуйте тест-кейс
+      // Act
+      const result = postsService.findMany();
+
+      // Assert
+      expect(result).toEqual(posts);
     });
 
     it('should return correct posts for skip and limit options', () => {
-      // реализуйте тест-кейс
+      // Arrange
+      const skip = 1;
+      const limit = 2;
+      const expectedResult = posts.slice(skip, skip + limit);
+
+      // Act
+      const result = postsService.findMany({ skip, limit });
+
+      // Assert
+      expect(result).toEqual(expectedResult);
     });
 
-    // реализуйте недостающие тест-кейсы
+    it('should return correct posts when only skip is provided', () => {
+      // Arrange
+      const skip = 2;
+      const expectedResult = posts.slice(skip);
+
+      // Act
+      const result = postsService.findMany({ skip });
+
+      // Assert
+      expect(result).toEqual(expectedResult);
+    });
+
+    it('should return correct posts when only limit is provided', () => {
+      // Arrange
+      const limit = 3;
+      const expectedResult = posts.slice(0, limit);
+
+      // Act
+      const result = postsService.findMany({ limit });
+
+      // Assert
+      expect(result).toEqual(expectedResult);
+    });
+
+    it('should return all posts when skip is 0', () => {
+      // Arrange
+      const skip = 0;
+
+      // Act
+      const result = postsService.findMany({ skip });
+
+      // Assert
+      expect(result).toEqual(posts);
+    });
+
+    it('should return empty array when limit is 0', () => {
+      // Arrange
+      const limit = 0;
+
+      // Act
+      const result = postsService.findMany({ limit });
+
+      // Assert
+      expect(result).toEqual([]);
+    });
+
+    it('should return empty array when skip is greater than the number of posts', () => {
+      // Arrange
+      const skip = posts.length + 1;
+
+      // Act
+      const result = postsService.findMany({ skip });
+
+      // Assert
+      expect(result).toEqual([]);
+    });
+
+    it('should return all posts when limit is greater than the number of posts', () => {
+      // Arrange
+      const limit = posts.length + 1;
+
+      // Act
+      const result = postsService.findMany({ limit });
+
+      // Assert
+      expect(result).toEqual(posts);
+    });
   });
 });
